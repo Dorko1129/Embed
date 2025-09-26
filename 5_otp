@@ -1,0 +1,49 @@
+from random import randint
+
+ALPHABET = 'abcdefghijklmnopqrstuvwxyz'
+
+def generate_otp(characters):
+    with open("otp.txt", "w") as f:
+        for i in range(characters):
+            f.write(str(randint(0, 25)) + "\n")
+
+def load_otp():
+    with open("otp.txt", "r") as f:
+        contents = f.read().splitlines()
+        return contents
+
+def encrypt(message, key):
+    ciphertext = ''
+    for (position, character) in enumerate(message):
+        if character.lower() not in ALPHABET:
+            ciphertext += character
+        else:
+            encrypted = (ALPHABET.index(character.lower()) + int(key[position])) % len(ALPHABET)
+            new_char = ALPHABET[encrypted]
+            if character.isupper():
+                new_char = new_char.upper()
+            ciphertext += new_char
+    return ciphertext
+
+def decrypt(message, key):
+    plaintext = ''
+    for (position, character) in enumerate(message):
+        if character.lower() not in ALPHABET:
+            plaintext += character
+        else:
+            decrypted = (ALPHABET.index(character.lower()) - int(key[position])) % len(ALPHABET)
+            new_char = ALPHABET[decrypted]
+            if character.isupper():
+                new_char = new_char.upper()
+            plaintext += new_char
+    return plaintext
+
+message = input("Enter a message: ")
+generate_otp(len(message))
+otp = load_otp()
+
+encrypted_message = encrypt(message, otp)
+decrypted_message = decrypt(encrypted_message, otp)
+
+print("Encrypted:", encrypted_message)
+print("Decrypted:", decrypted_message)
